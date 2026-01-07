@@ -33,6 +33,7 @@
 package org.firstinspires.ftc.teamcode.Drive;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.FLOAT;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -40,6 +41,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -71,8 +73,8 @@ public class StarterBot extends OpMode {
      * velocity. Here we are setting the target, and minimum velocity that the launcher should run
      * at. The minimum velocity is a threshold for determining when to fire.
      */
-    final double LAUNCHER_TARGET_VELOCITY = 1125;
-    final double LAUNCHER_MIN_VELOCITY = 1075;
+    final double LAUNCHER_TARGET_VELOCITY = 1175;
+    final double LAUNCHER_MIN_VELOCITY = 1125;
 
     // Declare OpMode members.
     private DcMotor leftFrontDrive = null;
@@ -82,7 +84,7 @@ public class StarterBot extends OpMode {
     private DcMotorEx launcher = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
-
+    //private LED Digital_LED;
     ElapsedTime feederTimer = new ElapsedTime();
 
     /*
@@ -115,6 +117,7 @@ public class StarterBot extends OpMode {
     double rightFrontPower;
     double leftBackPower;
     double rightBackPower;
+    double Feeder;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -123,6 +126,7 @@ public class StarterBot extends OpMode {
     public void init() {
         launchState = LaunchState.IDLE;
 
+        //Digital_LED.off();
         /*
          * Initialize the hardware variables. Note that the strings used here as parameters
          * to 'get' must correspond to the names assigned during the robot configuration
@@ -133,9 +137,9 @@ public class StarterBot extends OpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBack");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBack");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
-        leftFeeder = hardwareMap.get(CRServo.class, "leftFeeder");
-        rightFeeder = hardwareMap.get(CRServo.class, "rightFeeder");
-
+        leftFeeder = hardwareMap.get(CRServo.class, "left_feeder");
+        rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
+        //Digital_LED = hardwareMap.get(LED.class, "Digital_LED");
         /*
          * To drive forward, most robots need the motor on one side to be reversed,
          * because the axles point in opposite directions. Pushing the left stick forward
@@ -217,21 +221,34 @@ public class StarterBot extends OpMode {
          * more complex maneuvers.
          */
         mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-
         /*
          * Here we give the user control of the speed of the launcher motor without automatically
          * queuing a shot.
          */
-        if (gamepad1.y) {
-            launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-        } else if (gamepad1.b) { // stop flywheel
+        if (gamepad2.y) {
+            launcher.setVelocity((LAUNCHER_TARGET_VELOCITY));
+            telemetry.addData("Velocity",LAUNCHER_TARGET_VELOCITY );
+
+        } else if (gamepad2.b) { // stop flywheel
             launcher.setVelocity(STOP_SPEED);
         }
+
+        //if (LAUNCHER_MIN_VELOCITY<= launcher.getVelocity()) {
+            //Digital_LED.on();
+        //}
+        //else {
+            //Digital_LED.off();
+        //}
+
 
         /*
          * Now we call our "Launch" function.
          */
-        launch(gamepad1.rightBumperWasPressed());
+        if (gamepad2.a)
+            Feeder = 1;
+        else
+            Feeder = 0;
+
 
         /*
          * Show the state and motor powers
@@ -248,7 +265,7 @@ public class StarterBot extends OpMode {
     public void stop() {
     }
 
-    void mecanumDrive(double forward, double strafe, double rotate){
+    void mecanumDrive(double forward, double strafe, double rotate) {
 
         /* the denominator is the largest motor power (absolute value) or 1
          * This ensures all the powers maintain the same ratio,
@@ -265,10 +282,12 @@ public class StarterBot extends OpMode {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
+        leftFeeder.setPower(Feeder);
+        rightFeeder.setPower(Feeder);
 
     }
 
-    void launch(boolean shotRequested) {
+    /* void launch(boolean shotRequested) {
         switch (launchState) {
             case IDLE:
                 if (shotRequested) {
@@ -293,7 +312,7 @@ public class StarterBot extends OpMode {
                     leftFeeder.setPower(STOP_SPEED);
                     rightFeeder.setPower(STOP_SPEED);
                 }
-                break;
-        }
-    }
-}
+                break;*/
+            }
+
+
