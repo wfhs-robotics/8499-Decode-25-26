@@ -82,9 +82,10 @@ public class StarterBot extends OpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotorEx launcher = null;
-    private CRServo leftFeeder = null;
-    private CRServo rightFeeder = null;
-    //private LED Digital_LED;
+    private DcMotorEx intake = null;
+    private CRServo Feeder1 = null;
+    private CRServo Feeder2 = null;
+    private LED Digital_LED;
     ElapsedTime feederTimer = new ElapsedTime();
 
     /*
@@ -118,6 +119,7 @@ public class StarterBot extends OpMode {
     double leftBackPower;
     double rightBackPower;
     double Feeder;
+    double Intake_System;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -126,7 +128,7 @@ public class StarterBot extends OpMode {
     public void init() {
         launchState = LaunchState.IDLE;
 
-        //Digital_LED.off();
+        Digital_LED.off();
         /*
          * Initialize the hardware variables. Note that the strings used here as parameters
          * to 'get' must correspond to the names assigned during the robot configuration
@@ -137,9 +139,11 @@ public class StarterBot extends OpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBack");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBack");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
-        leftFeeder = hardwareMap.get(CRServo.class, "left_feeder");
-        rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
-        //Digital_LED = hardwareMap.get(LED.class, "Digital_LED");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        Feeder1 = hardwareMap.get(CRServo.class, "feeder1");
+        Feeder2 = hardwareMap.get(CRServo.class, "feeder2");
+        Digital_LED = hardwareMap.get(LED.class, "Digital_LED");
+
         /*
          * To drive forward, most robots need the motor on one side to be reversed,
          * because the axles point in opposite directions. Pushing the left stick forward
@@ -175,8 +179,8 @@ public class StarterBot extends OpMode {
         /*
          * set Feeders to an initial value to initialize the servo controller
          */
-        leftFeeder.setPower(STOP_SPEED);
-        rightFeeder.setPower(STOP_SPEED);
+        Feeder1.setPower(STOP_SPEED);
+        Feeder2.setPower(STOP_SPEED);
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
 
@@ -184,7 +188,7 @@ public class StarterBot extends OpMode {
          * Much like our drivetrain motors, we set the left feeder servo to reverse so that they
          * both work to feed the ball into the robot.
          */
-        leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
+        Feeder1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         /*
          * Tell the driver that initialization is complete.
@@ -233,12 +237,13 @@ public class StarterBot extends OpMode {
             launcher.setVelocity(STOP_SPEED);
         }
 
-        //if (LAUNCHER_MIN_VELOCITY<= launcher.getVelocity()) {
-            //Digital_LED.on();
-        //}
-        //else {
-            //Digital_LED.off();
-        //}
+        if (LAUNCHER_MIN_VELOCITY<= launcher.getVelocity()) {
+            Digital_LED.on();
+        }
+        else {
+            Digital_LED.off();
+        }
+
 
 
         /*
@@ -249,7 +254,10 @@ public class StarterBot extends OpMode {
         else
             Feeder = 0;
 
-
+        if (gamepad2.x)
+            Intake_System = 1;
+        else
+            Intake_System = 0;
         /*
          * Show the state and motor powers
          */
@@ -282,8 +290,9 @@ public class StarterBot extends OpMode {
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
-        leftFeeder.setPower(Feeder);
-        rightFeeder.setPower(Feeder);
+        Feeder1.setPower(Feeder);
+        Feeder2.setPower(Intake_System);
+        intake.setPower(Intake_System);
 
     }
 
