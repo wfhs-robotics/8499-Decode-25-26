@@ -222,16 +222,15 @@ public class RoboHawk_8499_TeleOp extends OpMode {
          */
         if (gamepad2.y) {
             launcher.setVelocity((LAUNCHER_TARGET_VELOCITY));
-            telemetry.addData("Velocity",LAUNCHER_TARGET_VELOCITY );
+            telemetry.addData("Velocity", LAUNCHER_TARGET_VELOCITY);
 
         } else if (gamepad2.b) { // stop flywheel
             launcher.setVelocity(STOP_SPEED);
         }
 
-        if (LAUNCHER_MIN_VELOCITY<= launcher.getVelocity()) {
+        if (LAUNCHER_MIN_VELOCITY <= launcher.getVelocity()) {
             Digital_LED.on();
-        }
-        else {
+        } else {
             Digital_LED.off();
         }
 
@@ -245,8 +244,15 @@ public class RoboHawk_8499_TeleOp extends OpMode {
         else
             Feeder = 0;
 
-        if (gamepad2.x)
+        if (gamepad2.x || gamepad2.a)
+            Feeder2.setPower(1);
+        else
+            Feeder2.setPower(0);
+
+
+    if (gamepad2.x)
             Intake_System = 1;
+
         else
             Intake_System = 0;
         /*
@@ -282,7 +288,6 @@ public class RoboHawk_8499_TeleOp extends OpMode {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
         Feeder1.setPower(Feeder);
-        Feeder2.setPower(Intake_System);
         intake.setPower(Intake_System);
 
     }
