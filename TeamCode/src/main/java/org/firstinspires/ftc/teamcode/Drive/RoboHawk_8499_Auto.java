@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode.Drive;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -120,6 +121,7 @@ public class RoboHawk_8499_Auto extends OpMode
     private DcMotorEx launcher = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
+    GoBildaPinpointDriver pinpoint = null;
     /*
      * TECH TIP: State Machines
      * We use "state machines" in a few different ways in this auto. The first step of a state
@@ -193,9 +195,9 @@ public class RoboHawk_8499_Auto extends OpMode
         leftDrive  = hardwareMap.get(DcMotor.class, "leftBack");
         rightDrive = hardwareMap.get(DcMotor.class, "rightBack");
         launcher = hardwareMap.get(DcMotorEx.class,"launcher");
-        leftFeeder = hardwareMap.get(CRServo.class, "left_feeder");
-        rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
-
+        leftFeeder = hardwareMap.get(CRServo.class, "feeder1");
+        rightFeeder = hardwareMap.get(CRServo.class, "feeder2");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "LocData");
 
         /*
          * To drive forward, most robots need the motor on one side to be reversed,
@@ -203,8 +205,7 @@ public class RoboHawk_8499_Auto extends OpMode
          * MUST make the robot go forward. So, adjust these two lines based on your first test drive.
          * Note: The settings here assume direct drive on left and right wheels. Gear
          * Reduction or 90° drives may require direction flips
-         */
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+             leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         /*
