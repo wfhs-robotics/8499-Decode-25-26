@@ -131,6 +131,7 @@ public class RoboHawk_8499_TeleOp extends OpMode {
          * to 'get' must correspond to the names assigned during the robot configuration
          * step.
          */
+        //Digital_LED.off();
         leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFront");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFront");
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBack");
@@ -161,7 +162,7 @@ public class RoboHawk_8499_TeleOp extends OpMode {
          * through any wiring.
          */
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         /*
          * Setting zeroPowerBehavior to BRAKE enables a "brake mode". This causes the motor to
@@ -173,6 +174,7 @@ public class RoboHawk_8499_TeleOp extends OpMode {
         leftBackDrive.setZeroPowerBehavior(BRAKE);
         rightBackDrive.setZeroPowerBehavior(BRAKE);
         launcher.setZeroPowerBehavior(BRAKE);
+        intake.setZeroPowerBehavior(BRAKE);
 
         /*
          * set Feeders to an initial value to initialize the servo controller
@@ -206,39 +208,23 @@ public class RoboHawk_8499_TeleOp extends OpMode {
      */
     @Override
     public void loop() {
-        /*
-         * Here we call a function called arcadeDrive. The arcadeDrive function takes the input from
-         * the joysticks, and applies power to the left and right drive motor to move the robot
-         * as requested by the driver. "arcade" refers to the control style we're using here.
-         * Much like a classic arcade game, when you move the left joystick forward both motors
-         * work to drive the robot forward, and when you move the right joystick left and right
-         * both motors work to rotate the robot. Combinations of these inputs can be used to create
-         * more complex maneuvers.
-         */
+
         mecanumDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        /*
-         * Here we give the user control of the speed of the launcher motor without automatically
-         * queuing a shot.
-         */
+
         if (gamepad2.y) {
             launcher.setVelocity((LAUNCHER_TARGET_VELOCITY));
             telemetry.addData("Velocity", LAUNCHER_TARGET_VELOCITY);
-
-        } else if (gamepad2.b) { // stop flywheel
+        }
+        else if (gamepad2.b) {
             launcher.setVelocity(STOP_SPEED);
         }
 
-        if (LAUNCHER_MIN_VELOCITY <= launcher.getVelocity()) {
+       /* if (LAUNCHER_MIN_VELOCITY <= launcher.getVelocity()) {
             Digital_LED.on();
         } else {
             Digital_LED.off();
-        }
+        }*/
 
-
-
-        /*
-         * Now we call our "Launch" function.
-         */
         if (gamepad2.a)
             Feeder = 1;
         else
@@ -249,9 +235,8 @@ public class RoboHawk_8499_TeleOp extends OpMode {
         else
             Feeder2.setPower(0);
 
-
-    if (gamepad2.x)
-            Intake_System = 1;
+        if (gamepad2.x)
+            Intake_System = 0.5;
 
         else
             Intake_System = 0;
@@ -263,9 +248,6 @@ public class RoboHawk_8499_TeleOp extends OpMode {
 
     }
 
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
     @Override
     public void stop() {
     }
@@ -290,34 +272,4 @@ public class RoboHawk_8499_TeleOp extends OpMode {
         Feeder1.setPower(Feeder);
         intake.setPower(Intake_System);
 
-    }
-
-    /* void launch(boolean shotRequested) {
-        switch (launchState) {
-            case IDLE:
-                if (shotRequested) {
-                    launchState = LaunchState.SPIN_UP;
-                }
-                break;
-            case SPIN_UP:
-                launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-                if (launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
-                    launchState = LaunchState.LAUNCH;
-                }
-                break;
-            case LAUNCH:
-                leftFeeder.setPower(FULL_SPEED);
-                rightFeeder.setPower(FULL_SPEED);
-                feederTimer.reset();
-                launchState = LaunchState.LAUNCHING;
-                break;
-            case LAUNCHING:
-                if (feederTimer.seconds() > FEED_TIME_SECONDS) {
-                    launchState = LaunchState.IDLE;
-                    leftFeeder.setPower(STOP_SPEED);
-                    rightFeeder.setPower(STOP_SPEED);
-                }
-                break;*/
-            }
-
-
+    }}
